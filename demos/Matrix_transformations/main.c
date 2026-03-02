@@ -4,7 +4,7 @@
 int main(int argc, char *argv[])
 {
     float m[3][3];
-    float point[3] = {10.0, 10.0, 1.0}; // Homogen koord (x, y, 1)
+    float point[3] = {10.0, 10.0, 1.0};
     float transformed_point[3];
 
     // Egysegmatrix inicializalas
