@@ -64,6 +64,15 @@ void init_opengl()
     glClearDepth(1.0);
 
     glLineWidth(2.0f);
+    //fog doesnt work so well with this concept :)
+    glEnable(GL_FOG);
+    GLfloat fog_color[] = {0.8f, 0.8f, 0.8f, 1.0f};
+    glFogfv(GL_FOG_COLOR, fog_color);
+
+    glFogi(GL_FOG_MODE, GL_LINEAR);
+    glFogf(GL_FOG_START, 5.0f);
+    glFogf(GL_FOG_END, 30.0f);
+    glFogi(GL_FOG_HINT, GL_NICEST);
 }
 
 void reshape(GLsizei width, GLsizei height)
@@ -109,13 +118,13 @@ void handle_app_events(App* app)
         case SDL_KEYDOWN:
             switch (event.key.keysym.scancode) {
             case SDL_SCANCODE_ESCAPE: app->is_running = false; break;
-            case SDL_SCANCODE_W: set_camera_speed(&(app->camera), 1); break;
-            case SDL_SCANCODE_S: set_camera_speed(&(app->camera), -1); break;
-            case SDL_SCANCODE_A: set_camera_side_speed(&(app->camera), 1); break;
-            case SDL_SCANCODE_D: set_camera_side_speed(&(app->camera), -1); break;
+            case SDL_SCANCODE_W: set_camera_speed(&(app->camera), 10); break;
+            case SDL_SCANCODE_S: set_camera_speed(&(app->camera), -10); break;
+            case SDL_SCANCODE_A: set_camera_side_speed(&(app->camera), 10); break;
+            case SDL_SCANCODE_D: set_camera_side_speed(&(app->camera), -10); break;
             
-            case SDL_SCANCODE_E: set_camera_vertical_speed(&(app->camera), 1); break;
-            case SDL_SCANCODE_Q: set_camera_vertical_speed(&(app->camera), -1); break;
+            case SDL_SCANCODE_E: set_camera_vertical_speed(&(app->camera), 10); break;
+            case SDL_SCANCODE_Q: set_camera_vertical_speed(&(app->camera), -10); break;
             
             case SDL_SCANCODE_J: set_camera_rotation_speed(&(app->camera), 90.0); break;
             case SDL_SCANCODE_L: set_camera_rotation_speed(&(app->camera), -90.0); break;
