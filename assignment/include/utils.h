@@ -1,5 +1,6 @@
 #ifndef UTILS_H
 #define UTILS_H
+#include <GL/gl.h>
 
 /**
  * GLSL-like three dimensional vector
@@ -25,5 +26,7 @@ typedef struct Color
  * Calculates radian from degree.
  */
 double degree_to_radian(double degree);
+
+GLuint load_texture(const char* filename);
 
 #endif /* UTILS_H */

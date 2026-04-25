@@ -4,12 +4,14 @@
 #include "camera.h"
 
 //4x4 tile
-#define DATA_COUNT 16
+#define DATA_COUNT 100
 
 typedef struct Scene
 {
     float sphere_rotation;
     int data_values[DATA_COUNT];
+    double uptime;
+    GLuint texture_id;
 } Scene;
 
 /**

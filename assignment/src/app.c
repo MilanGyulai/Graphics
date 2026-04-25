@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <SDL2/SDL_image.h>
 
+static float light_intensity = 1.0f;
 void init_app(App* app, int width, int height)
 {
     int error_code;
@@ -65,14 +66,14 @@ void init_opengl()
 
     glLineWidth(2.0f);
     //fog doesnt work so well with this concept :)
-    glEnable(GL_FOG);
+    /*glEnable(GL_FOG);
     GLfloat fog_color[] = {0.8f, 0.8f, 0.8f, 1.0f};
     glFogfv(GL_FOG_COLOR, fog_color);
 
     glFogi(GL_FOG_MODE, GL_LINEAR);
     glFogf(GL_FOG_START, 5.0f);
     glFogf(GL_FOG_END, 30.0f);
-    glFogi(GL_FOG_HINT, GL_NICEST);
+    glFogi(GL_FOG_HINT, GL_NICEST);*/
 }
 
 void reshape(GLsizei width, GLsizei height)
@@ -118,6 +119,34 @@ void handle_app_events(App* app)
         case SDL_KEYDOWN:
             switch (event.key.keysym.scancode) {
             case SDL_SCANCODE_ESCAPE: app->is_running = false; break;
+            case SDL_SCANCODE_F1: SDL_ShowSimpleMessageBox(
+                SDL_MESSAGEBOX_INFORMATION,
+                "Help:\n",
+                "Movement:\n"
+                "W, A, S, D - forward, left, back, right \n"
+                "Q, E - up, down\n"
+                "Mouse left button(hold) move camera with swipe\n"
+                "+, - light intensity up and down",
+                app->window
+            );
+            break;
+            case SDL_SCANCODE_KP_PLUS:
+            light_intensity += 1.0f;
+            if(light_intensity > 10.0f){
+                light_intensity = 10.0f;
+            }
+            printf("Light intensity: %f\n", light_intensity);
+            break;
+            case SDL_SCANCODE_KP_MINUS:
+            light_intensity -= 1.0f;
+            if(light_intensity < -10.0f){
+                light_intensity = -10.0f;
+            }
+            printf("Light intensity: %f\n", light_intensity);
+            break;
+            ///todo: make smth up for good light
+            ///delete debug
+            ///model load
             case SDL_SCANCODE_W: set_camera_speed(&(app->camera), 10); break;
             case SDL_SCANCODE_S: set_camera_speed(&(app->camera), -10); break;
             case SDL_SCANCODE_A: set_camera_side_speed(&(app->camera), 10); break;
@@ -191,6 +220,11 @@ void render_app(App* app)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
+
+    GLfloat current_light[] = { light_intensity, light_intensity, light_intensity, 1.0f };
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, current_light);
+    GLfloat ambient_light[] = { light_intensity * 0.2f, light_intensity * 0.2f, light_intensity * 0.2f, 1.0f };
+    glLightfv(GL_LIGHT0, GL_AMBIENT, ambient_light);
 
     glPushMatrix();
     set_view(&(app->camera));
