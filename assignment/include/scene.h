@@ -3,16 +3,26 @@
 
 #include "camera.h"
 
-//4x4 tile
-#define DATA_COUNT 100
+
 
 typedef struct Scene
-{
-    float sphere_rotation;
-    int data_values[DATA_COUNT];
+{    
     double uptime;
+    float sphere_rotation;
+    float tower_x[256];
+    float tower_y[256];
+    int data_values[256];
+    int is_hacked[256];
+    int hacked_count;
+    int hacker_mode;
+    int active_tower_index;
+    int current_hack_level;
+    int is_target[256];
     GLuint texture_id;
     GLuint model_id;
+    GLuint terminal_id[3];
+    GLuint matrix_texture_id;
+
 } Scene;
 
 /**
@@ -36,5 +46,14 @@ void render_scene(const Scene* scene);
 void draw_origin();
 
 void draw_cube();
+
+void hack_tower(Scene* scene, float cam_x,  float cam_y);
+
+void draw_progress_bar(const Scene* scene);
+
+void process_hack_input(Scene* scene, int choice);
+
+void draw_terminal(const Scene* scene);
+
 
 #endif /* SCENE_H */

@@ -65,15 +65,25 @@ void init_opengl()
     glClearDepth(1.0);
 
     glLineWidth(2.0f);
-    //fog doesnt work so well with this concept :)
-    /*glEnable(GL_FOG);
-    GLfloat fog_color[] = {0.8f, 0.8f, 0.8f, 1.0f};
+
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_COLOR_MATERIAL);
+
+    GLfloat diffuse_light[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    GLfloat ambient_light[] = { 0.2f, 0.2f, 0.2f, 1.0f };
+    GLfloat light_pos[] = { 0.0f, 50.0f, 0.0f, 1.0f };
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse_light);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, ambient_light);
+    glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
+
+    glEnable(GL_FOG);
+    GLfloat fog_color[] = {0.02f, 0.02f, 0.06f, 1.0f}; 
     glFogfv(GL_FOG_COLOR, fog_color);
 
-    glFogi(GL_FOG_MODE, GL_LINEAR);
-    glFogf(GL_FOG_START, 5.0f);
-    glFogf(GL_FOG_END, 30.0f);
-    glFogi(GL_FOG_HINT, GL_NICEST);*/
+    glFogi(GL_FOG_MODE, GL_EXP2);
+    glFogf(GL_FOG_DENSITY, 0.035f);
+    glFogi(GL_FOG_HINT, GL_NICEST);
 }
 
 void reshape(GLsizei width, GLsizei height)
@@ -144,9 +154,14 @@ void handle_app_events(App* app)
             }
             printf("Light intensity: %f\n", light_intensity);
             break;
-            ///todo: make smth up for good light
-            ///delete debug
-            ///model load
+            case SDL_SCANCODE_F:
+            printf("[DEBUG] F gomb lenyomva! Kamera: X=%.2f, Y=%.2f\n", 
+                       app->camera.position.x, app->camera.position.y);
+            hack_tower(&(app->scene), app->camera.position.x, app->camera.position.y);
+            break;
+            case SDL_SCANCODE_1: process_hack_input(&(app->scene), 1);break;
+            case SDL_SCANCODE_2: process_hack_input(&(app->scene), 2);break;
+            case SDL_SCANCODE_3: process_hack_input(&(app->scene), 3);break;
             case SDL_SCANCODE_W: set_camera_speed(&(app->camera), 10); break;
             case SDL_SCANCODE_S: set_camera_speed(&(app->camera), -10); break;
             case SDL_SCANCODE_A: set_camera_side_speed(&(app->camera), 10); break;
