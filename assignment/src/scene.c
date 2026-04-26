@@ -73,7 +73,8 @@ void init_scene(Scene* scene)
 {
     scene->sphere_rotation = 0.0f; 
     scene->uptime = 0.0f;
-    scene->texture_id = load_texture("assets/matrix.png");
+    scene->texture_id = load_texture("assets/material.jpg");
+    scene->model_id = load_model("assets/drone.obj");
 
     int demo_data[] = {20, 45, 12, 180, 50, 60, 30, 90, 200, 15, 88, 40, 10, 160, 25, 70};
 
@@ -122,8 +123,8 @@ void render_scene(const Scene* scene)
     //4x4
     ///to-do: pulsating data_values with moving?, textures?,files?
     int index = 0;
-    for (int x = 0; x < 10; x++){
-        for (int y = 0; y < 10; y++){
+    for (int x = 0; x < 16; x++){
+        for (int y = 0; y < 16; y++){
             if(index > DATA_COUNT) break;
 
             int current_value = scene->data_values[index];
@@ -162,7 +163,15 @@ void render_scene(const Scene* scene)
             index++;
             } 
         }
-        glDisable(GL_TEXTURE_2D);
+        glEnable(GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D, scene->texture_id);
+            glColor3f(1.0f, 1.0f, 1.0f);
+
+            glPushMatrix();
+                glTranslatef(0.0f, 0.0f, 10.0f); 
+                glScalef(0.1f, 0.1f, 0.1f); 
+                glCallList(scene->model_id);
+            glPopMatrix();
 }
 
 void draw_origin()

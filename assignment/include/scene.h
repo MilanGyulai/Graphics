@@ -12,6 +12,7 @@ typedef struct Scene
     int data_values[DATA_COUNT];
     double uptime;
     GLuint texture_id;
+    GLuint model_id;
 } Scene;
 
 /**

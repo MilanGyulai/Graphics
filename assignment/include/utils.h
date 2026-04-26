@@ -28,5 +28,6 @@ typedef struct Color
 double degree_to_radian(double degree);
 
 GLuint load_texture(const char* filename);
+GLuint load_model(const char* filename);
 
 #endif /* UTILS_H */
