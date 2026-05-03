@@ -27,7 +27,25 @@ typedef struct Color
  */
 double degree_to_radian(double degree);
 
+/**
+ * Betölt egy képfájlt (pl. PNG vagy JPG) a megadott elérési útvonalról,
+ * és átalakítja egy használható OpenGL textúrává.
+ * 
+ * @param filename  A képfájl elérési útvonala (pl. "assets/matrix.png")
+ * @return          A generált OpenGL textúra azonosítója (ID-ja), 
+ *                  amivel a későbbiekben hivatkozni lehet rá a rajzolásnál.
+ */
 GLuint load_texture(const char* filename);
+
+/**
+ * Betölt egy 3D-s modellt (jellemzően .obj fájlt) a megadott elérési útvonalról.
+ * Feldolgozza a modell csúcspontjait, normálvektorait és textúra koordinátáit,
+ * majd feltölti a videókártyára egy OpenGL Display List formájában.
+ * 
+ * @param filename  A 3D modell fájljának elérési útvonala (pl. "assets/drone.obj")
+ * @return          A betöltött modell OpenGL azonosítója (Display List ID),
+ *                  amit a glCallList() függvénnyel lehet kirajzolni a térben.
+ */
 GLuint load_model(const char* filename);
 
 #endif /* UTILS_H */

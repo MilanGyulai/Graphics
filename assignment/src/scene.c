@@ -41,13 +41,13 @@ void draw_cube() {
     glEnd();
 }
 
-void draw_origin() {
+/*void draw_origin() {
     glBegin(GL_LINES);
         glColor3f(1, 0, 0); glVertex3f(0, 0, 0); glVertex3f(1, 0, 0);
         glColor3f(0, 1, 0); glVertex3f(0, 0, 0); glVertex3f(0, 1, 0);
         glColor3f(0, 0, 1); glVertex3f(0, 0, 0); glVertex3f(0, 0, 1);
     glEnd();
-}
+}*/
 
 void draw_progress_bar(const Scene* scene) {
     glMatrixMode(GL_PROJECTION);
@@ -126,8 +126,8 @@ void process_hack_input(Scene* scene, int choice) {
 
     int correct_answer = 0;
     switch (scene->current_hack_level) {
-        case 0: correct_answer = 2; break;
-        case 1: correct_answer = 3; break;
+        case 0: correct_answer = 3; break;
+        case 1: correct_answer = 2; break;
         case 2: correct_answer = 1; break;
     }
 
@@ -207,7 +207,7 @@ void update_scene(Scene* scene, double time) {
 }
 
 void render_scene(const Scene* scene) {
-    draw_origin();
+    /*draw_origin();*/
     
     int victory = (scene->hacked_count >= 3);
 
@@ -266,16 +266,35 @@ void render_scene(const Scene* scene) {
     
     glMatrixMode(GL_TEXTURE);
     glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
 
-    glEnable(GL_TEXTURE_2D);
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+
+   glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, scene->texture_id); 
     glColor3f(1.0f, 1.0f, 1.0f);
 
     glPushMatrix();
-        glTranslatef(0.0f, 0.0f, 10.0f); 
-        glScalef(0.1f, 0.1f, 0.1f); 
+        glTranslatef(0.0f, 30.0f, 5.0f); 
+        glRotatef(scene->uptime * 45.0f, 0.0f, 0.0f, 1.0f);
+        glScalef(0.2f, 0.2f, 0.2f); 
         glCallList(scene->model_id);
+    glPopMatrix();
+
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+
+    float hover = sin(scene->uptime * 3.0f) * 0.03f;
+
+    glTranslatef(0.0f, -0.5f + hover, -1.5f);
+    glRotatef(10.0f, 1.0f, 0.0f, 0.0f);
+    glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
+    glScalef(0.1f, 0.1f, 0.1f);
+    glCallList(scene->model_id);
+    
     glPopMatrix();
 
     draw_progress_bar(scene);

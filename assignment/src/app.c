@@ -155,7 +155,7 @@ void handle_app_events(App* app)
             printf("Light intensity: %f\n", light_intensity);
             break;
             case SDL_SCANCODE_F:
-            printf("[DEBUG] F gomb lenyomva! Kamera: X=%.2f, Y=%.2f\n", 
+            printf("F button pressed! Kamera: X=%.2f, Y=%.2f\n", 
                        app->camera.position.x, app->camera.position.y);
             hack_tower(&(app->scene), app->camera.position.x, app->camera.position.y);
             break;
