@@ -43,7 +43,7 @@ GLuint load_texture(const char* filename);
  * majd feltölti a videókártyára egy OpenGL Display List formájában.
  * 
  * @param filename  A 3D modell fájljának elérési útvonala (pl. "assets/drone.obj")
- * @return          A betöltött modell OpenGL azonosítója (Display List ID),
+ * @return          A betöltött modell OpenGL azonosítója,
  *                  amit a glCallList() függvénnyel lehet kirajzolni a térben.
  */
 GLuint load_model(const char* filename);
