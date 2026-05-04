@@ -9,7 +9,9 @@
 
 void draw_cube() {
     glBegin(GL_QUADS);
+    //fényvisszaverődés
         glNormal3f(0.0f, -1.0f, 0.0f);
+        //textúra
         glTexCoord2f(0.0f, 0.0f); glVertex3f(0,0,0);
         glTexCoord2f(1.0f, 0.0f); glVertex3f(1,0,0);
         glTexCoord2f(1.0f, 1.0f); glVertex3f(1,0,1);
@@ -53,15 +55,16 @@ void draw_progress_bar(const Scene* scene) {
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
-    glOrtho(0.0, 100.0, 0.0, 100.0, -1.0, 1.0); 
+    glOrtho(0.0, 100.0, 0.0, 100.0, -1.0, 1.0); //100x100
 
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glLoadIdentity();
-
+    //mélység
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_TEXTURE_2D);
 
+    // Sötétszürke
     glColor3f(0.1f, 0.1f, 0.1f);
     glBegin(GL_QUADS);
         glVertex2f(5.0f, 90.0f);
@@ -71,10 +74,11 @@ void draw_progress_bar(const Scene* scene) {
     glEnd();
 
     float progress = (float)scene->hacked_count / 3.0f; 
-    if (progress > 1.0f) progress = 1.0f;
+    if (progress > 1.0f) progress = 1.0f; //túlcsordulás
 
-    float bar_width = 5.0f + (90.0f * progress);
+    float bar_width = 5.0f + (90.0f * progress); // dinamikus szélesség
 
+    // zöld
     glColor3f(0.0f, 1.0f, 0.0f);
     glBegin(GL_QUADS);
         glVertex2f(5.0f, 90.0f);
@@ -93,6 +97,7 @@ void draw_progress_bar(const Scene* scene) {
 void draw_terminal(const Scene* scene) {
     if (scene->hacker_mode == 0) return;
 
+    //2d mód
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
@@ -103,8 +108,9 @@ void draw_terminal(const Scene* scene) {
 
     glDisable(GL_DEPTH_TEST); 
     glEnable(GL_TEXTURE_2D);
+    //aktuális kép
     glBindTexture(GL_TEXTURE_2D, scene->terminal_id[scene->current_hack_level]);
-    glColor3f(1.0f, 1.0f, 1.0f);
+    glColor3f(1.0f, 1.0f, 1.0f); //eredeti szín
 
     glBegin(GL_QUADS);
         glTexCoord2f(0.0f, 1.0f); glVertex2f(20.0f, 20.0f); 
@@ -132,13 +138,14 @@ void process_hack_input(Scene* scene, int choice) {
     }
 
     if (choice == correct_answer) { 
-        scene->is_hacked[scene->active_tower_index] = 1;
-        scene->hacked_count++;
+        scene->is_hacked[scene->active_tower_index] = 1; //zöld torony
+        scene->hacked_count++; //proggress
         printf("HACK SUCCESFUL SQL CODE ACCEPTED!\n");
     } else {
         printf("HACK WAS NOT SUCCESFUL ALERT! BAD QUERY.\n");
     }
     
+    //visszaadjuk az írányítást
     scene->hacker_mode = 0;
 }
 
@@ -157,9 +164,9 @@ void hack_tower(Scene* scene, float cam_x, float cam_y) {
         }
 
         if (distance < 4.0f && scene->is_hacked[i] == 0 && scene->is_target[i] == 1) {
-            scene->hacker_mode = 1;
-            scene->active_tower_index = i;
-            scene->current_hack_level = rand() % 3;
+            scene->hacker_mode = 1; //mód váltás
+            scene->active_tower_index = i; //eltároljuk a tornyot
+            scene->current_hack_level = rand() % 3; //random feladvány
             printf("TERMINAL HACK STARTED ON COLUMN %d\n", i);
             return;
         }
@@ -188,6 +195,7 @@ void init_scene(Scene* scene) {
         scene->data_values[i] = (rand() % 150) + 10;
         scene->is_hacked[i] = 0;
         scene->is_target[i] = 0;
+        //koordináták +30 és -30 között
         scene->tower_x[i] = ((rand() % 600) / 10.0f) - 30.0f; 
         scene->tower_y[i] = ((rand() % 600) / 10.0f) - 30.0f;
     }
@@ -211,13 +219,16 @@ void render_scene(const Scene* scene) {
     
     int victory = (scene->hacked_count >= 3);
 
+    //grid
     float gridSize = 30.0f; 
     glBegin(GL_LINES);
     float step = 2.0f;      
     
+    //win condition
     if (victory) glColor3f(0.0f, 1.0f, 1.0f);
     else glColor3f(0.0f, 0.3f, 0.5f);
     
+    //vonalak
     for (float z = -30.0f; z <= 30.0f; z += step * 2) {
         for(int i = -gridSize; i <= gridSize; i += step){
             glVertex3f(i, -gridSize, z); glVertex3f(i, gridSize, z); 
@@ -231,9 +242,11 @@ void render_scene(const Scene* scene) {
     }
     glEnd();
 
+    //effect
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, scene->matrix_texture_id);
     
+    //animáció
     glMatrixMode(GL_TEXTURE);
     glPushMatrix();
     glLoadIdentity();
@@ -246,6 +259,7 @@ void render_scene(const Scene* scene) {
         glPushMatrix();
         glTranslatef(scene->tower_x[i], scene->tower_y[i], 2.0f);
 
+        //színkódolás
         if (victory) {
             glColor3f(0.0f, 0.6f, 1.0f); 
         } else if (scene->is_hacked[i] == 1) {
@@ -264,6 +278,7 @@ void render_scene(const Scene* scene) {
         glPopMatrix();
     } 
     
+    //animáció leállítása a drón miatt
     glMatrixMode(GL_TEXTURE);
     glPopMatrix();
 
@@ -289,6 +304,7 @@ void render_scene(const Scene* scene) {
 
     float hover = sin(scene->uptime * 3.0f) * 0.03f;
 
+    //drón helyzete
     glTranslatef(0.0f, -0.5f + hover, -1.5f);
     glRotatef(10.0f, 1.0f, 0.0f, 0.0f);
     glRotatef(180.0f, 0.0f, 1.0f, 0.0f);

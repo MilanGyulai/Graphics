@@ -20,43 +20,52 @@ double degree_to_radian(double degree)
 GLuint load_texture(const char* filename){
 	GLuint texture;
 	SDL_Surface* surface;
-
+    //kép betöltése
 	surface = IMG_Load(filename);
 	if(surface == NULL){
 		printf("ERROR: file was not found %s \n", filename);
 		printf("ERROR: SDL_image %s \n", IMG_GetError());
 		return 0;
 	}
-
+    //id
 	glGenTextures(1, &texture);
+    //textúra kijelölése?
 	glBindTexture(GL_TEXTURE_2D, texture);
 
+    //színmód rgb v rgba
 	int mode = GL_RGB;
 	if(surface->format->BytesPerPixel == 4){
 		mode = GL_RGBA;
 	}
 
+    //videókártyára töltés
 	glTexImage2D(GL_TEXTURE_2D, 0, mode, surface->w, surface->h, 0, mode, GL_UNSIGNED_BYTE, surface->pixels);
 
+    //szűrési paraméterek
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
+    //ramból törlés
 	SDL_FreeSurface(surface);
 
 	return texture;
 }
 
+//tinyobjhez segédfüggvény a beolvasáshoz
 static void file_reader(void* ctx, const char* filename, const int is_mtl,
                         const char* obj_filename, char** data, size_t* len) {
     (void)ctx; (void)is_mtl; (void)obj_filename;
+    //bin mód olvasás
     FILE* file = fopen(filename, "rb");
     if (!file) { *data = NULL; *len = 0; return; }
+    //file méret meghatározás
     fseek(file, 0, SEEK_END);
     *len = ftell(file);
     fseek(file, 0, SEEK_SET);
+    //lefoglalás
     *data = (char*)malloc(*len + 1);
     fread(*data, 1, *len, file);
-    (*data)[*len] = '\0';
+    (*data)[*len] = '\0';//záró karakter
     fclose(file);
 }
 
@@ -67,6 +76,7 @@ GLuint load_model(const char* filename) {
     tinyobj_material_t* materials = NULL;
     size_t num_materials;
 
+    //obj fájl feldolgozás
     unsigned int flags = TINYOBJ_FLAG_TRIANGULATE;
     int ret = tinyobj_parse_obj(&attrib, &shapes, &num_shapes, &materials, &num_materials, 
                                 filename, file_reader, NULL, flags);
@@ -76,13 +86,16 @@ GLuint load_model(const char* filename) {
         return 0;
     }
 
+    //display list ez kell a videókártyának a rajzoláshoz
     GLuint list = glGenLists(1);
     glNewList(list, GL_COMPILE);
     glBegin(GL_TRIANGLES);
 
+    //megnézzük az alakot
     for (size_t i = 0; i < num_shapes; i++) {
         size_t index_offset = 0;
         
+        //textúra koordináták
         for (size_t f = 0; f < attrib.num_face_num_verts; f++) {
             for (size_t v = 0; v < 3; v++) {
                 tinyobj_vertex_index_t idx = attrib.faces[index_offset + v];
@@ -93,6 +106,7 @@ GLuint load_model(const char* filename) {
                     glTexCoord2f(tx, ty);
                 }
 
+                //normál vektorok a fényekhez
                 if (idx.v_idx >= 0 && attrib.num_normals > 0 && idx.vn_idx >= 0) {
                     float nx = attrib.normals[3 * idx.vn_idx + 0];
                     float ny = attrib.normals[3 * idx.vn_idx + 1];
@@ -100,6 +114,7 @@ GLuint load_model(const char* filename) {
                     glNormal3f(nx, ny, nz);
                 }
 
+                //csúcsok koordinátái
                 if (idx.v_idx >= 0) {
                     float vx = attrib.vertices[3 * idx.v_idx + 0];
                     float vy = attrib.vertices[3 * idx.v_idx + 1];
