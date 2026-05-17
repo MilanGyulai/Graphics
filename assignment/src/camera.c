@@ -1,8 +1,7 @@
 #include "camera.h"
-
 #include <GL/gl.h>
-
 #include <math.h>
+#include <scene.h>
 
 void init_camera(Camera* camera)
 {
@@ -23,7 +22,28 @@ void init_camera(Camera* camera)
     camera->rotation_speed.z = 0.0;
 }
 
-void update_camera(Camera* camera, double time)
+int can_move(const Scene* scene, double next_x, double next_y) {
+
+    if (next_x < -29.0 || next_x > 29.0 || next_y < -29.0 || next_y > 29.0) {
+        return 0;
+    }
+
+    double hitbox_radius = 1.2f; 
+    for (int i = 0; i < 256; i++) {
+        double dx = scene->tower_x[i] - next_x;
+        double dy = scene->tower_y[i] - next_y;
+        
+        double distance = sqrt(dx * dx + dy * dy);
+
+        if (distance < hitbox_radius) {
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+void update_camera(Camera* camera, const Scene* scene , double time)
 {
     double angle;
     double side_angle;
@@ -33,10 +53,13 @@ void update_camera(Camera* camera, double time)
     angle = degree_to_radian(camera->rotation.z);
     side_angle = degree_to_radian(camera->rotation.z + 90.0);
 
-    camera->position.x += cos(angle) * camera->speed.y * time;
-    camera->position.y += sin(angle) * camera->speed.y * time;
-    camera->position.x += cos(side_angle) * camera->speed.x * time;
-    camera->position.y += sin(side_angle) * camera->speed.x * time;
+    double planned_x = camera->position.x + (cos(angle) * camera->speed.y * time) + (cos(side_angle) * camera->speed.x * time);
+    double planned_y = camera->position.y + (sin(angle) * camera->speed.y * time) + (sin(side_angle) * camera->speed.x * time);
+
+    if(can_move(scene, planned_x, planned_y) == 1){
+        camera->position.x = planned_x;
+        camera->position.y = planned_y;
+    }
 
     camera->position.z += camera->speed.z * time;
 }

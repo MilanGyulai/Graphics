@@ -24,7 +24,8 @@ void init_camera(Camera* camera);
 /**
  * Update the position of the camera.
  */
-void update_camera(Camera* camera, double time);
+struct Scene;
+void update_camera(Camera* camera,const struct Scene* scene, double time);
 
 /**
  * Apply the camera settings to the view transformation.

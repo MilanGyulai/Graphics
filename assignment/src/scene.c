@@ -51,6 +51,37 @@ void draw_cube() {
     glEnd();
 }*/
 
+void draw_help_menu(const Scene* scene) {
+    if (scene->show_help == 0) return;
+
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    glOrtho(0.0, 100.0, 0.0, 100.0, -1.0, 1.0); 
+    
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+
+    glDisable(GL_DEPTH_TEST); 
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, scene->help_texture_id);
+    glColor3f(1.0f, 1.0f, 1.0f);
+
+    glBegin(GL_QUADS);
+        glTexCoord2f(0.0f, 1.0f); glVertex2f(25.0f, 25.0f); 
+        glTexCoord2f(1.0f, 1.0f); glVertex2f(75.0f, 25.0f); 
+        glTexCoord2f(1.0f, 0.0f); glVertex2f(75.0f, 75.0f); 
+        glTexCoord2f(0.0f, 0.0f); glVertex2f(25.0f, 75.0f); 
+    glEnd();
+
+    glEnable(GL_DEPTH_TEST);
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+}
+
 void draw_progress_bar(const Scene* scene) {
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
@@ -185,16 +216,19 @@ void init_scene(Scene* scene) {
     scene->hacker_mode = 0;
     scene->active_tower_index = -1;
     scene->current_hack_level = 0;
+    scene->show_help = 0;
     
     scene->terminal_id[0] = load_texture("assets/hack1.png");
     scene->terminal_id[1] = load_texture("assets/hack2.png");
     scene->terminal_id[2] = load_texture("assets/hack3.png");
     scene->matrix_texture_id = load_texture("assets/matrix.png");
+    scene->help_texture_id = load_texture("assets/help.png");
 
     for(int i = 0; i < 256; ++i) {
         scene->data_values[i] = (rand() % 150) + 10;
         scene->is_hacked[i] = 0;
         scene->is_target[i] = 0;
+        // float x, y , dist;
         //koordináták +30 és -30 között
         scene->tower_x[i] = ((rand() % 600) / 10.0f) - 30.0f; 
         scene->tower_y[i] = ((rand() % 600) / 10.0f) - 30.0f;
@@ -315,4 +349,5 @@ void render_scene(const Scene* scene) {
 
     draw_progress_bar(scene);
     draw_terminal(scene);
+    draw_help_menu(scene);
 }

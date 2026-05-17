@@ -18,10 +18,12 @@ typedef struct Scene
     int active_tower_index;
     int current_hack_level;
     int is_target[256];
+    int show_help;
     GLuint texture_id;
     GLuint model_id;
     GLuint terminal_id[3];
     GLuint matrix_texture_id;
+    GLuint help_texture_id;
 
 } Scene;
 

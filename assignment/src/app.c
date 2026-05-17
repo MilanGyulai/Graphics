@@ -129,17 +129,16 @@ void handle_app_events(App* app)
         case SDL_KEYDOWN:
             switch (event.key.keysym.scancode) {
             case SDL_SCANCODE_ESCAPE: app->is_running = false; break;
-            case SDL_SCANCODE_F1: SDL_ShowSimpleMessageBox(
-                SDL_MESSAGEBOX_INFORMATION,
-                "Help:\n",
-                "Movement:\n"
-                "W, A, S, D - forward, left, back, right \n"
-                "Q, E - up, down\n"
-                "Mouse left button(hold) move camera with swipe\n"
-                "+, - light intensity up and down",
-                app->window
-            );
+            case SDL_SCANCODE_F1:
+            
+                if(app->scene.show_help == 0){
+                    app->scene.show_help = 1;
+                    
+                } else {
+                    app->scene.show_help = 0;
+                }
             break;
+
             case SDL_SCANCODE_KP_PLUS:
             light_intensity += 1.0f;
             if(light_intensity > 10.0f){
@@ -155,7 +154,7 @@ void handle_app_events(App* app)
             printf("Light intensity: %f\n", light_intensity);
             break;
             case SDL_SCANCODE_F:
-            printf("F button pressed! Kamera: X=%.2f, Y=%.2f\n", 
+            printf("F button pressed! Camera: X=%.2f, Y=%.2f\n", 
                        app->camera.position.x, app->camera.position.y);
             hack_tower(&(app->scene), app->camera.position.x, app->camera.position.y);
             break;
@@ -226,7 +225,7 @@ void update_app(App* app)
     elapsed_time = current_time - app->uptime;
     app->uptime = current_time;
 
-    update_camera(&(app->camera), elapsed_time);
+    update_camera(&(app->camera), &(app->scene), elapsed_time);
     
     update_scene(&(app->scene), elapsed_time); 
 }
