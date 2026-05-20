@@ -1,4 +1,5 @@
 #include "scene.h"
+#include "camera.h"
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <math.h>
@@ -50,6 +51,70 @@ void draw_cube() {
         glColor3f(0, 0, 1); glVertex3f(0, 0, 0); glVertex3f(0, 0, 1);
     glEnd();
 }*/
+
+void draw_sky(GLuint sky_texture){
+    double theta, phi1, phi2;
+    double x1, y1, z1;
+    double x2, y2, z2;
+    double u, v1, v2;
+
+    int n_slices, n_stacks;
+    double radius;
+    int i, k;
+
+    n_slices = 36;
+    n_stacks = 16;
+    radius = 275.0f;
+
+    glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
+    glDepthMask(GL_FALSE);
+
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, sky_texture);
+    glColor3f(1.0f, 1.0f, 1.0f);
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+
+    glScaled(radius, radius, radius);
+    glBegin(GL_TRIANGLE_STRIP);
+
+    for (i = 0; i < n_stacks; ++i) {
+        v1 = (double)(i) / n_stacks;
+        v2 = (double)(i + 1) / n_stacks;
+
+        phi1 = (v1 * M_PI) - (M_PI / 2.0);
+        phi2 = (v2 * M_PI) - (M_PI / 2.0);
+
+        for (k = 0; k <= n_slices; ++k) {
+            u = (double)k / n_slices;
+            theta = u * 2.0 * M_PI;
+
+            x1 = cos(theta) * cos(phi1);
+            y1 = sin(theta) * cos(phi1);
+            z1 = sin(phi1);
+
+            x2 = cos(theta) * cos(phi2);
+            y2 = sin(theta) * cos(phi2);
+            z2 = sin(phi2);
+
+            glTexCoord2d(u, 1.0 - v1);
+            glVertex3d(x1, y1, z1);
+
+            glTexCoord2d(u, 1.0 - v2);
+            glVertex3d(x2, y2, z2);
+            }
+        }
+        glEnd();
+        glPopMatrix();
+
+    glDisable(GL_TEXTURE_2D);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_TRUE);
+
+}
 
 void draw_help_menu(const Scene* scene) {
     if (scene->show_help == 0) return;
@@ -223,6 +288,8 @@ void init_scene(Scene* scene) {
     scene->terminal_id[2] = load_texture("assets/hack3.png");
     scene->matrix_texture_id = load_texture("assets/matrix.png");
     scene->help_texture_id = load_texture("assets/help.png");
+    scene->sky_texture_id = load_texture("assets/sky.png");
+    
 
     for(int i = 0; i < 256; ++i) {
         scene->data_values[i] = (rand() % 150) + 10;
@@ -250,6 +317,7 @@ void update_scene(Scene* scene, double time) {
 
 void render_scene(const Scene* scene) {
     /*draw_origin();*/
+    draw_sky(scene->sky_texture_id);
     
     int victory = (scene->hacked_count >= 3);
 
@@ -303,7 +371,7 @@ void render_scene(const Scene* scene) {
             glColor3f(1.0f, 0.3f + pulse, 0.3f + pulse); 
         } else {
             float norm = (float)current_value / 200.0f;
-            glColor3f(0.4f + (norm * 0.2f), 0.0f, 0.0f); 
+            glColor3f(1.0f, 1.0f, 0.3f + (norm * 0.2f)); 
         }
 
         float height = current_value / 20.0f;

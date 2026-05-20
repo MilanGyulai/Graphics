@@ -82,7 +82,7 @@ void init_opengl()
     glFogfv(GL_FOG_COLOR, fog_color);
 
     glFogi(GL_FOG_MODE, GL_EXP2);
-    glFogf(GL_FOG_DENSITY, 0.035f);
+    glFogf(GL_FOG_DENSITY, 0.003f);
     glFogi(GL_FOG_HINT, GL_NICEST);
 }
 

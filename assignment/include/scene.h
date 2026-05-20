@@ -24,6 +24,7 @@ typedef struct Scene
     GLuint terminal_id[3];
     GLuint matrix_texture_id;
     GLuint help_texture_id;
+    GLuint sky_texture_id;
 
 } Scene;
 
@@ -97,5 +98,6 @@ void process_hack_input(Scene* scene, int choice);
  */
 void draw_terminal(const Scene* scene);
 
+void draw_sky(GLuint sky_texture);
 
 #endif /* SCENE_H */
